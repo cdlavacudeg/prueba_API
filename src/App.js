@@ -1,24 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
-
+import Search from "./components/Search";
+import './components/components.css';
+import ItemList from "./components/ItemList";
+import { useEffect, useState } from "react";
 function App() {
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/todos/")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          setIsLoaded(true);
+          setItems(result);
+        },
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      );
+  }, []);
+
+  const[userId,setUserId]=useState('');
+  const[itemId,setItemId]=useState('');
+  const[itemTitle,setItemTitle]=useState('');
+
+
+  var itemToMap=items;
+  if(itemTitle!=='') itemToMap=itemToMap.filter(todo=>todo.title.toLowerCase().includes(itemTitle.toLowerCase()));
+  if(userId!=='') itemToMap=itemToMap.filter(todo=>todo.userId===Number(userId));
+  if(itemId!=='') itemToMap=itemToMap.filter(todo=>todo.id===Number(itemId));
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Search type={"User id"} searchValue={userId} setFunction={setUserId} />
+      <Search type={"Id"} searchValue={itemId} setFunction={setItemId}/>
+      <Search type={"Title"} searchValue={itemTitle} setFunction={setItemTitle} />
+      <ItemList>
+      {error && <p className="info">Error al cargar los datos </p>}
+      {!isLoaded && <p className="info">Cargando</p>}
+      {(isLoaded && itemToMap.length===0) &&<p className="info">No se encontró ninguna coincidencia</p>}
+      
+      {itemToMap.map(todo=>(
+                <li key={todo.id} className="item"                >
+                  User Id= {todo.userId}, id={todo.id},Title={todo.title},completed={`${todo.completed ?"true":"false"}`}
+                </li>))}
+      </ItemList>
+    </>
   );
 }
 
