@@ -38,14 +38,16 @@ function App() {
       <Search type={"Id"} searchValue={itemId} setFunction={setItemId}/>
       <Search type={"Title"} searchValue={itemTitle} setFunction={setItemTitle} />
       <ItemList>
-      {error && <p className="info">Error al cargar los datos </p>}
-      {!isLoaded && <p className="info">Cargando</p>}
-      {(isLoaded && itemToMap.length===0) &&<p className="info">No se encontró ninguna coincidencia</p>}
-      
-      {itemToMap.map(todo=>(
-                <li key={todo.id} className="item"                >
-                  User Id= {todo.userId}, id={todo.id},Title={todo.title},completed={`${todo.completed ?"true":"false"}`}
-                </li>))}
+        {error && <p className="info">Error al cargar los datos </p>}
+        {!isLoaded && <p className="info">Cargando</p>}
+        {(isLoaded && itemToMap.length===0) &&<p className="info">No se encontró ninguna coincidencia</p>}
+        
+        {itemToMap.map(todo=>(
+                  <li key={todo.id} className={`item ${todo.completed && 'item--completed'}`}>
+                    <span className={`iconCheck ${todo.completed && 'iconCheck--active'}`}>√</span>
+                    <p className="item-title">{todo.title}
+                    <span className="item-title--id">User id: {todo.userId} <br/> Id: {todo.id}</span></p>                    
+                  </li>))}
       </ItemList>
     </>
   );
